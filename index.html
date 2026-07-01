@@ -53,11 +53,15 @@
     font-size: clamp(11px, 3vw, 16px); text-transform: uppercase;
     color: var(--cyan); opacity: .8; padding-left: .5em;
   }
+  .startBtn {
+    margin-top: 44px; padding: 18px 46px; font-size: clamp(18px,5.5vw,24px);
+    letter-spacing: .1em; border-radius: 14px;
+    animation: breathe 2s ease-in-out infinite;
+  }
   .prompt {
-    margin-top: 42px; font-size: clamp(18px, 5vw, 26px); font-weight: 700;
-    color: var(--gold); text-transform: uppercase; letter-spacing: .12em;
-    text-shadow: 0 0 18px rgba(255,210,74,.6);
-    animation: breathe 1.8s ease-in-out infinite;
+    margin-top: 22px; font-size: clamp(13px, 3.6vw, 17px); font-weight: 600;
+    color: var(--ink); opacity: .7; text-transform: uppercase; letter-spacing: .1em;
+    text-shadow: 0 0 12px rgba(95,233,255,.3);
   }
   @keyframes breathe { 0%,100%{ opacity:.55; transform: scale(.99);} 50%{ opacity:1; transform: scale(1.02);} }
 
@@ -148,7 +152,8 @@
 <div id="startScreen" class="overlay">
   <div class="title">STARFRUIT</div>
   <div class="subtitle">Katana&nbsp;·&nbsp;Slash</div>
-  <div class="prompt">Slash to begin</div>
+  <button class="btn gold startBtn" id="startBtn">⚔ Ready to Slash</button>
+  <div class="prompt">Drag to slash the fruit · avoid the dynamite</div>
   <div class="best" id="bestWrap" style="display:none">Best&nbsp; <b id="bestVal">0</b></div>
 </div>
 
@@ -412,8 +417,9 @@ function spawnObject(){
   const x = W*0.16 + Math.random()*W*0.68;
   // aim upward with lateral drift toward center-ish
   const vx = (W/2 - x) * (0.6 + Math.random()*0.5) / 60 + (Math.random()-0.5)*90;
-  const peak = H*(0.16 + Math.random()*0.22);
-  const vy = -Math.sqrt(2*G*(H - peak)) * (0.62 + baseSpeed*0.06);
+  // apex height: smaller peak => higher on screen. Launch fruit up into the top third.
+  const peak = H*(0.10 + Math.random()*0.16);
+  const vy = -Math.sqrt(2*G*(H - peak)) * (0.86 + baseSpeed*0.05);
   objects.push({
     idx, isDyn, x, y: H + R,
     vx, vy, R,
@@ -920,6 +926,10 @@ function endGame(){
 }
 
 document.getElementById("againBtn").addEventListener("click", startGame);
+
+// Start via the button, or by tapping/clicking anywhere on the start screen.
+document.getElementById("startBtn").addEventListener("click", (e)=>{ e.stopPropagation(); startGame(); });
+startScreen.addEventListener("pointerdown", ()=>{ if(state===STATE.START) startGame(); });
 
 /* --------------------------- LEADERBOARD --------------------------------- */
 let sb = null;
